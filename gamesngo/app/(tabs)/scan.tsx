@@ -4,19 +4,25 @@ import { Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useRouter } from "expo-router";
 
 
 const ScanPage: React.FC = () => { 
+  const router = useRouter();
 
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+  
 
   
 
   const handleBarcodeScanned = ({ type, data }) => {
+    
+    router.replace(`/success?amount=${data}`);
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+
+    
   };
 
 
@@ -54,7 +60,9 @@ const ScanPage: React.FC = () => {
 
       />
         {scanned && (
+          <ThemedView style={styles.buttonshape}>
         <Button  title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
+      </ThemedView>
       )}
 
     </ThemedView>
@@ -102,8 +110,11 @@ const styles = StyleSheet.create({
     height: 178,
     width: 290,
     resizeMode: 'contain',
-    
- 
+  },
+  buttonshape: {
+    borderRadius: 10,
+    padding: 10,
+    margin: 10,
   },
 
 });

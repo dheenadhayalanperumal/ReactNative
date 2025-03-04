@@ -1,54 +1,67 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Button } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 
 export default function HomeScreen() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
+      if (isLoggedIn !== "true") {
+        router.replace('/login'); // Navigate back to login
+      }
+    };
+
+    checkLogin();
+  }
+  , []);
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("isLoggedIn");
+    await AsyncStorage.removeItem("login_token");  
+    await AsyncStorage.removeItem("outlet_id");  
+
+    router.replace('/login'); // Navigate back to login
+    
+  };
+
+  const claimedCouponNumbers = [3]; // Example claimed coupon numbers
+  const unclaimedCouponNumbers = [6]; // Example unclaimed coupon numbers
+
   return (
     <ParallaxScrollView 
-    headerBackgroundColor={{ light: '#fffff', dark: '#1D3D47' }}
-            headerImage={
+      headerBackgroundColor={{ light: '#fffff', dark: '#1D3D47' }}
+      headerImage={
         <Image
           source={require('@/assets/images/logo2.png')}
           style={styles.reactLogo}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+      }
+    >
+      <ThemedView style={styles.box123}>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText style={styles.titleContainer}>Claimed Coupon</ThemedText>
+       
+          <ThemedText style={styles.titleContainer1}>{claimedCouponNumbers}</ThemedText>
+       
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
+        <ThemedText style={styles.titleContainer}>Unclaimed Coupon</ThemedText>
+        <ThemedText style={styles.titleContainer1}>{unclaimedCouponNumbers}</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+      
+
+    
+      <ThemedView >
+        <Button title="Get Started" onPress={handleLogout} />
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -56,20 +69,40 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',  
+        alignItems: 'center',  
+    fontSize: 20,
    
+  },
+  titleContainer1: {
+    fontSize: 20,
+    color: 'blue',
   },
   stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
+    height: 190,
+  alignItems: 'center',
+  justifyContent: 'space-evenly',
+  backgroundColor: '#FFAA10',
+     },
   reactLogo: {
    
-    height: 200,
-    width: 200,
+    height: 150,
+    width: 300,
     resizeMode: 'contain',
     alignSelf: 'center',
   
+  },
+
+  box123: {
+   flexDirection: 'column',
+    height: 400,
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor:"#FFAA10",
+
+
+   
   },
 });

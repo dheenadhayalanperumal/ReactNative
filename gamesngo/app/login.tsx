@@ -1,37 +1,37 @@
 import React, { useState } from "react";
 import {
   StyleSheet,
-  Button,
   TextInput,
   View,
   Image,
   Text,
   TouchableWithoutFeedback,
   Keyboard,
+  TouchableOpacity,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
-const Logo = require("../Image/Logo.png");
+const Logo = require("../assets/images/logo2.png");
 
 export default function Login() {
-  const navigation = useNavigation();
-  const [data, setData] = useState("");
+  const router = useRouter();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isFocused1, setIsFocused1] = useState(false);
+
   const handleFocus = () => setIsFocused(true);
-  const handleFocus1 = () => setIsFocused1(true);
   const handleBlur = () => setIsFocused(false);
+  const handleFocus1 = () => setIsFocused1(true);
   const handleBlur1 = () => setIsFocused1(false);
 
   const handleLogin = () => {
     const formData = new FormData();
-    formData.append("mobile_number", data); // Assuming mobile_number is the key for username field
-    formData.append("password", password); // Assuming password is the key for password field
+    formData.append("email", email);
+    formData.append("password", password);
 
-    fetch("https://nmwinternet.com/staging/demo/admin/Api/login_auth", {
+    fetch("https://staging.gamesngo.com/outlet/Api/login", {
       method: "POST",
       headers: { "Content-Type": "multipart/form-data" },
       body: formData,
@@ -44,29 +44,19 @@ export default function Login() {
       })
       .then((data) => {
         console.log("Response data:", data);
-        if (data.status === true) {
-          // console.log(data);
-          AsyncStorage.setItem("token", data.user_details.login_token);
-          AsyncStorage.setItem("userId", data.user_details.id);
-          AsyncStorage.setItem("userName", data.user_details.staff_name);
-          
-          AsyncStorage.setItem("isLoggedIn", "1")
+        if (data.login_status === "success") {
+          AsyncStorage.setItem("login_token", data.login_token);
+          AsyncStorage.setItem("outlet_id", data.outlet_id);
+          AsyncStorage.setItem("isLoggedIn", "true")
             .then(() => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: "Home1" }], // Use 'Home1' as that's the name in your stack navigator
-              });
-              // replace this with the actual condition for a successful login
-              navigation.navigate("Home1");
+              console.log(data);
+              router.replace("/(tabs)");
             })
             .catch((error) => {
               console.error("AsyncStorage Error:", error);
             });
         } else {
-          // Display an alert if the username or password is incorrect
-          alert(
-            "invailed username and password."
-          );
+          alert("Invalid username or password.");
         }
       })
       .catch((error) => {
@@ -81,11 +71,11 @@ export default function Login() {
           <Image style={styles.Logo} source={Logo} />
           <TextInput
             style={isFocused ? styles.focusedText : styles.text}
-            placeholder="Enter your ID"
-            placeholderTextColor="#fff"
-            value={data}
-            keyboardType="numeric"
-            onChangeText={setData}
+            placeholder="Enter your Email ID"
+            placeholderTextColor="#1e1370"
+            value={email}
+            keyboardType="email-address"
+            onChangeText={setEmail}
             numberOfLines={1}
             onFocus={handleFocus}
             onBlur={handleBlur}
@@ -93,7 +83,7 @@ export default function Login() {
           <TextInput
             style={isFocused1 ? styles.focusedText : styles.text}
             placeholder="Enter the Password"
-            placeholderTextColor="#fff"
+            placeholderTextColor="#1e1370"
             secureTextEntry
             onChangeText={setPassword}
             numberOfLines={1}
@@ -108,15 +98,15 @@ export default function Login() {
     </TouchableWithoutFeedback>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#A20A3A",
+    backgroundColor: "light",
     alignItems: "center",
     justifyContent: "space-around",
   },
   Button: {
-    color: "#000",
     backgroundColor: "#FFAA10",
     borderWidth: 1,
     borderColor: "#FFAA10",
@@ -142,24 +132,25 @@ const styles = StyleSheet.create({
   text: {
     marginTop: 10,
     marginBottom: 10,
-    color: "#FFF",
+    color: "black",
     fontSize: 15,
     borderWidth: 0.5,
-    borderColor: "#fff",
+    borderColor: "#2e17d4",
     height: 43,
     width: 296,
     padding: 10,
+    borderRadius: 5,
   },
   focusedText: {
-    paddingLeft:16,
+    paddingLeft: 16,
     marginTop: 10,
     marginBottom: 10,
     height: 43,
     width: 296,
-    color: "#fff",
+    color: "black",
     fontSize: 15,
     borderWidth: 2,
-    borderColor: "#fff",
-    Animation: "fadeIn 0.5s",
+    borderColor: "#1e1370",
+    borderRadius: 5,
   },
 });
