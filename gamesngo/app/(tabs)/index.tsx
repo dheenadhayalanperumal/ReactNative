@@ -51,7 +51,7 @@ export default function HomeScreen() {
           setTotalCupons(data.claimed_copun_list + data.unclaimed_copun_list);
         }
       } catch (error) {
-        console.error("Error:", error);
+        // console.error("Error:", error);
         alert("Something went wrong. Please try again.");
       }
     };

@@ -52,7 +52,7 @@ const ScanPage: React.FC = () => {
       }
   
       const result = await response.json();
-      console.log("Response data:", result);
+      // console.log("Response data:", result);
   
       if (result.login_status === "success") {
         setScanned(true);

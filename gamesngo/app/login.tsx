@@ -43,24 +43,26 @@ export default function Login() {
         return response.json();
       })
       .then((data) => {
-        console.log("Response data:", data);
+        // console.log("Response data:", data);
         if (data.login_status === "success") {
           AsyncStorage.setItem("login_token", data.login_token);
           AsyncStorage.setItem("outlet_id", data.outlet_id);
           AsyncStorage.setItem("isLoggedIn", "true")
             .then(() => {
-              console.log(data);
+              // console.log(data);
               router.replace("/(tabs)");
             })
             .catch((error) => {
-              console.error("AsyncStorage Error:", error);
+              alert("Something went wrong. Please try again.");
+              // console.error("AsyncStorage Error:", error);
             });
         } else {
           alert("Invalid username or password.");
         }
       })
       .catch((error) => {
-        console.error("Fetch Error:", error);
+        // console.error("Fetch Error:", error);
+        alert("Something went wrong. Please try again.");
       });
   };
 

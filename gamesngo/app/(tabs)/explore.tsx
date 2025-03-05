@@ -39,13 +39,13 @@ export default function TabTwoScreen() {
           return response.json();
         })
         .then((data) => {
-          console.log("Response data:", data);
+          // console.log("Response data:", data);
           if (data.login_status === "success") {
             setCuponData(data.claimed_coupons);
           }
         })
         .catch((error) => {
-          console.error("Error:", error);
+          // console.error("Error:", error);
           alert("Something went wrong. Please try again.");
         });
     }

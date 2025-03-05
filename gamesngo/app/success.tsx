@@ -46,7 +46,7 @@ const Green = () => {
         }
     
         const result = await response.json();
-        console.log("Response data:", result);
+        // console.log("Response data:", result);
     
         if (result.message === "Coupon redeemed successfully") {
          
