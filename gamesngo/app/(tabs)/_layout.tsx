@@ -44,7 +44,7 @@ export default function TabLayout() {
           headerShown: true,
 
           headerRight: () => <LogoutButton />,
-          title: '',
+          title: 'History',
           
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="history.fill" color={color}
            />,

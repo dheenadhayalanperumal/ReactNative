@@ -13,10 +13,10 @@ const Styles = StyleSheet.create({
 
 const LogoutButton = () => {
   const navigation = useRouter();
-
+ 
   const handleLogout = () => {
-    AsyncStorage.removeItem("token");
-    AsyncStorage.removeItem("userId");
+    AsyncStorage.removeItem("login_token");
+    AsyncStorage.removeItem("outlet_id");
     AsyncStorage.removeItem("isLoggedIn");
     navigation.replace("/login");
   }
