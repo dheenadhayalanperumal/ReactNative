@@ -41,8 +41,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'History',
+          headerShown: true,
+
           headerRight: () => <LogoutButton />,
+          title: '',
           
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="history.fill" color={color}
            />,

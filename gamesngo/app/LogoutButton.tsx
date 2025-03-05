@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 const Styles = StyleSheet.create({
   look: {
@@ -12,14 +12,14 @@ const Styles = StyleSheet.create({
 });
 
 const LogoutButton = () => {
-  const navigation = useNavigation();
+  const navigation = useRouter();
 
   const handleLogout = () => {
     AsyncStorage.removeItem("token");
     AsyncStorage.removeItem("userId");
     AsyncStorage.removeItem("isLoggedIn");
-    navigation.navigate("Login");
-  };
+    navigation.replace("/login");
+  }
 
   return (
     <Button textColor="black" style={Styles.look} mode="contained" onPress={handleLogout}>

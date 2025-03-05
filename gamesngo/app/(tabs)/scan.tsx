@@ -5,6 +5,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const ScanPage: React.FC = () => { 
@@ -13,17 +14,63 @@ const ScanPage: React.FC = () => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
-  
+
 
   
 
-  const handleBarcodeScanned = ({ type, data }) => {
-    
-    router.replace(`/success?amount=${data}`);
-    setScanned(true);
+  const [isFetching, setIsFetching] = useState(false);
 
-    
+  const handleBarcodeScanned = async ({ type, data }) => {
+    if (isFetching) return;
+    setIsFetching(true);
+  
+    try {
+      const id = await AsyncStorage.getItem("outlet_id");
+      const token = await AsyncStorage.getItem("login_token");
+  
+      if (!id || !token) {
+        alert("Missing outlet ID or login token.");
+        setIsFetching(false);
+        return;
+      }
+  
+      const formData = new FormData();
+      
+      formData.append("outlet_id", id);
+      formData.append("login_token", token);
+      formData.append("copun_id", data);
+      // console.log("copun_id", data);
+  
+      const response = await fetch("https://staging.gamesngo.com/outlet/Api/Get_coupon_list", {
+        method: "POST",
+        headers: { "Content-Type": "multipart/form-data" },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+  
+      const result = await response.json();
+      console.log("Response data:", result);
+  
+      if (result.login_status === "success") {
+        setScanned(true);
+        // router.replace("/claimed")
+        router.replace(`/success?data=${encodeURIComponent(JSON.stringify(result))}`);
+
+      } else {
+        alert("Invalid QR code.");
+      }
+    } catch (error) {
+      // console.error("Fetch Error:", error);
+      alert("Failed to scan the QR code. Please try again.");
+    } finally {
+      setIsFetching(false);
+    }
   };
+  
+  
 
 
   if (!permission) {
@@ -107,7 +154,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   reactLogo: {
-    height: 178,
+    height: 150,
     width: 290,
     resizeMode: 'contain',
   },

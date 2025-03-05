@@ -7,50 +7,91 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Text, View } from "react-native";
+import { useEffect, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
 export default function TabTwoScreen() {
-  const data = {
-    days: [
-      {
-        cuponid: "1",
-        username: "John Doe",
-        climedamount: "$100",
-      },
-      {
-        cuponid: "2",
-        username: "Jane Doe",
-        climedamount: "$200",
-      },
-      {
-        cuponid: "3",
-        username: "John Smith",
-        climedamount: "$300",
-      },
-    ],
-  };
+  const [data, setCuponData] = useState([]);
+
+  useEffect(() => {
+
+    const getdata = async () => {
+      const id = await AsyncStorage.getItem("outlet_id");
+      const token = await AsyncStorage.getItem("login_token");
+      console.log("outlet_id", id);
+      console.log("login_token", token);
+
+      const formData = new FormData();
+      formData.append("outlet_id", id);
+      formData.append("login_token", token);
+      fetch("https://staging.gamesngo.com/outlet/Api/get_claimed_copun_list", {
+
+        method: "POST",
+        headers: { "Content-Type": "multipart/form-data" },
+        body: formData,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Response data:", data);
+          if (data.login_status === "success") {
+            setCuponData(data.claimed_coupons);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Something went wrong. Please try again.");
+        });
+    }
+    getdata();
+  }
+    , []);
+
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#fff', dark: '#353636' }}
       headerImage={
         <Image
-        source={require('@/assets/images/logo2.png')}
+        source={require('@/assets/images/coupon.png')}
         style={styles.reactLogo}
       />
       }>
 <ThemedText style={styles.titleContainer}>Claimed Coupon</ThemedText>
                  <View style={styles.container}>
+                  
+                 <View style={styles.smallbox1}>
+                            {/* <Text style={styles.subtitle}>{cupon.id}</Text> */}
+                            {/* <Image source={sun} style={styles.image} /> */}
+                            <Text style={styles.subtitle1}>Name</Text>
+                            <Text style={styles.subtitle1}>Time</Text>
+                            <Text style={styles.subtitle1}>%</Text>
+                        </View>
 
          <View>
-                {data.days.map((cupon, index) => {
+                {data.map((cupon, index) => {
                                        
                     return (
                         <View key={index} style={styles.smallbox}>
-                            <Text style={styles.subtitle}>{cupon.cuponid}</Text>
+                            {/* <Text style={styles.subtitle}>{cupon.id}</Text> */}
                             {/* <Image source={sun} style={styles.image} /> */}
-                            <Text style={styles.subtitle}>{cupon.username}</Text>
-                            <Text style={styles.subtitle}>{cupon.climedamount}</Text>
+                            {
+                              cupon.name === null ?
+                              <Text style={styles.subtitle}>{cupon.mobile_no}</Text>
+                              :
+                              <Text style={styles.subtitle}>{cupon.name}</Text>
+
+
+                            }
+                            <Text style={styles.subtitle}>{cupon.redeemed_time}</Text>
+                           
+                            <Text style={styles.subtitle}>{cupon.discount}</Text>
                         </View>
                     );
                 })}
@@ -77,10 +118,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   titleContainer: {
-    fontSize: 22,
-    flexDirection: 'row',
-    alignSelf: 'center',
-    gap: 8,
+   
+    width: "100%",
+   fontSize: 25,
+    textAlign: "center",
+   
+    
   },
   marginRight: {
     marginRight: 10, // This handles the spacing between items
@@ -94,7 +137,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#00C1F6",
+    backgroundColor: "#E4E4E4",
     alignItems: "center",
     borderRadius: 10,
     padding: 10,
@@ -116,12 +159,15 @@ const styles = StyleSheet.create({
 resizeMode: "contain",
   },
   subtitle: {
-    color: "white",
+    color: "#310D5A",
     fontSize: 12,
   },
   subtitle1: {
-    color: "yellow",
-    fontSize: 8,
+    color: "#e9ecef",
+    fontSize: 15,
+    fontWeight: 500,
+    justifyContent: "space-evenly",
+
   },
   reactLogo: {
    
@@ -131,4 +177,27 @@ resizeMode: "contain",
     alignSelf: 'center',
   
   },
+  smallbox1: {
+    height: 45,
+   
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#310D5A",
+    alignItems: "center",
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+  },
+  shadowOpacity: 0.36,
+  shadowRadius: 3,
+  elevation: 3,
+  marginBottom: 10
+  ,
+    
+  },
+  
 });
