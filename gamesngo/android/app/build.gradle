@@ -86,7 +86,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.dheena007.gamesngo'
+    namespace "com.gamesngo"
     defaultConfig {
         applicationId 'com.dheena007.gamesngo'
         minSdkVersion rootProject.ext.minSdkVersion
